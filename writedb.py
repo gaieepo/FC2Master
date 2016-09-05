@@ -31,7 +31,7 @@ def crawl(page):
     cur = conn.cursor()
 
     try:
-        url = 'http://video.fc2.com/en/a/list.php?page=' + str(page) + '&m=cat_top&sobj_up_mt_code=19'
+        url = 'http://video.fc2.com/en/a/list.php?page=' + str(page) + '&m=cat_top&sobj_up_mt_code=1'
         request = urllib2.Request(url, headers=headers)
         response = urllib2.urlopen(request)
         pageCode = response.read().decode('utf-8')
