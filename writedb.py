@@ -21,8 +21,6 @@ p = Pool(multiprocessing.cpu_count())
 patternId = re.compile('http://video.fc2.com/en/a/content/(.*?)/')
 typeEncode = sys.getfilesystemencoding()
 
-# conn = sqlite3.connect(r'C:\Users\gaieepo\Desktop\mysite\db.sqlite3')
-# cur = conn.cursor()
 
 def crawl(page):
     print "start page " + str(page)
@@ -31,7 +29,8 @@ def crawl(page):
     cur = conn.cursor()
 
     try:
-        url = 'http://video.fc2.com/en/a/list.php?page=' + str(page) + '&m=cat_top&sobj_up_mt_code=1'
+        url = 'http://video.fc2.com/en/a/list.php?page=' + \
+            str(page) + '&m=cat_top&sobj_up_mt_code=1'
         request = urllib2.Request(url, headers=headers)
         response = urllib2.urlopen(request)
         pageCode = response.read().decode('utf-8')
@@ -73,14 +72,17 @@ def crawl(page):
 
             star = video.find("li", class_="recommend")
             full_star_count = len(star.find_all("img", class_="icon_star"))
-            half_star_count = len(star.find_all("img", class_="icon_star_half"))
+            half_star_count = len(star.find_all(
+                "img", class_="icon_star_half"))
             star_count = full_star_count * 1.0 + half_star_count * 0.5
             # print star_count
 
             if star_count and comment and auth != "Premium":
                 # print videoId
-                videoInfo = (videoId, title, imgsrc, duration, comment, star_count)
-                cur.execute('insert into fc2_video (videoid, title, imgsrc, duration, comment, star) values (?, ?, ?, ?, ?, ?)', videoInfo)
+                videoInfo = (videoId, title, imgsrc,
+                             duration, comment, star_count)
+                cur.execute(
+                    'insert into fc2_video (videoid, title, imgsrc, duration, comment, star) values (?, ?, ?, ?, ?, ?)', videoInfo)
         except:
             pass
 
@@ -90,11 +92,9 @@ def crawl(page):
 
     print "end page " + str(page)
 
-
     # for i in range(len(titles)):
     #     if auths[i] != 'Premium' and stars != 0 and comments != '0':
     #         cursor.execute('insert into video (id, title) values ("%s", "%s")' % (ids[i], titles[i]))
-
 
     # patternUserName = re.compile('user_name.*?<a.*?>(.*?)</a>', re.S)
     # names = re.findall(patternUserName, pageCode)
