@@ -2,7 +2,6 @@
 
 import multiprocessing
 import re
-import urllib
 import urllib2
 import sys
 import sqlite3
@@ -29,8 +28,8 @@ def crawl(page):
     cur = conn.cursor()
 
     try:
-        url = 'http://video.fc2.com/en/a/list.php?page=' + \
-            str(page) + '&m=cat_top&sobj_up_mt_code=1'
+        url = 'http://video.fc2.com/en/list.php?page=' + \
+            str(page) + '&m=cat_top&sobj_up_mt_code=5'
         request = urllib2.Request(url, headers=headers)
         response = urllib2.urlopen(request)
         pageCode = response.read().decode('utf-8')
@@ -51,23 +50,36 @@ def crawl(page):
     for video in videos:
         try:
             imgsrc = video.find("img", class_="img").attrs['src']
+            # img.img::attr(src) -- css
+            # img.img @src -- css & xpath
+            # //img[@class="img"]/@src -- xpath
             # print imgsrc
 
             durationtag = video.find("span", class_="video_time_renew")
             duration = durationtag.string
+            # span.video_time_renew::text -- css
+            # //span[@class="video_time_renew"]/text() -- xpath
             # print duration
 
             titlelink = video.find("div", class_="video_info_right").h3.a
             title = titlelink.string
+            # div.video_info_right h3 a::text -- css
+            # //div[@class="video_info_right"]/h3/a/text() -- xpath
             # print title
+
             videoId = re.findall(patternId, titlelink.attrs['href'])[0]
+            # response.css('div.video_info_right h3 a::attr(href)').re(r'http://video.fc2.com/en/content/(.*)/')
             # print videoId
 
             auth = video.find("li", class_="member_icon").string
+            # li.member_icon::text -- css
+            # //li[contains(@class, "member_icon")]/text() -- xpath
             # print auth.encode('mbcs')
 
             comment = video.find("img", class_="icon_comments").parent.a.string
             comment = int(comment)
+            # img.icon_comments+a::text -- css
+            # //img[@class="icon_comments"]/following-sibling::a/text() -- xpath
             # print comment
 
             star = video.find("li", class_="recommend")
